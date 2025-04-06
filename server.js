@@ -47,17 +47,18 @@ const connectionRoutes = require("./Routes/connectionRoutes");
 const app = express();
 connectDB();
 
-// ✅ Setup CORS
-const corsOptions = {
-  origin: "https://task-management-frontend-azure.vercel.app", // your frontend domain
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  credentials: true, // only if you're using cookies or sessions
-};
+// ✅ Manual CORS headers — critical for Vercel
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://task-management-frontend-azure.vercel.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
 
-app.use(cors(corsOptions));
-
-// ✅ Handle preflight requests (important!)
-app.options("*", cors(corsOptions));
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 app.use(express.json());
 
