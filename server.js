@@ -33,7 +33,6 @@
 // const PORT = process.env.PORT || 5001;
 // app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 
-
 const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
@@ -48,16 +47,21 @@ const connectionRoutes = require("./Routes/connectionRoutes");
 const app = express();
 connectDB();
 
-// ✅ Allow only your frontend origin (use this ONCE, not twice)
-app.use(cors({
-  origin: 'https://task-management-frontend-azure.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true // use this only if you're using cookies/sessions
-}));
+// ✅ Setup CORS
+const corsOptions = {
+  origin: "https://task-management-frontend-azure.vercel.app", // your frontend domain
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true, // only if you're using cookies or sessions
+};
+
+app.use(cors(corsOptions));
+
+// ✅ Handle preflight requests (important!)
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
-// Routes
+// ✅ Routes
 app.use("/clustertaskmanagment/shareTaskmanegment", shareTaskRoutes); 
 app.use("/clustertaskmanagment/connectionmanegment", connectionRoutes);
 app.use("/clustertaskmanagment/categorymanegment", categoryRoutes);
@@ -65,5 +69,4 @@ app.use("/clustertaskmanagment/taskmanegment", taskRoutes);
 app.use("/clustertaskmanagment", authRoutes);
 
 const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
-
+app.listen(PORT, () => console.log(`✅ Server is running on port ${PORT}`));
